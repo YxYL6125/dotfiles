@@ -1,0 +1,69 @@
+#!/usr/bin/env sh
+
+# ========== 权限与服务加载 ==========
+sudo yabai --load-sa
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+
+# ========== Debug 日志 ==========
+yabai -m config debug_output on
+
+# ========== 窗口平铺布局（启动时为所有空间设置 bsp） ==========
+for idx in $(yabai -m query --spaces | jq '.[].index'); do
+  yabai -m space $idx --layout bsp
+done
+
+# ========== 窗口管理参数 ==========
+yabai -m config window_placement             second_child
+yabai -m config top_padding                  5
+yabai -m config bottom_padding               5
+yabai -m config left_padding                 5
+yabai -m config right_padding                5
+yabai -m config window_gap                   5
+yabai -m config auto_balance                 off
+yabai -m config split_ratio                  0.50
+yabai -m config mouse_modifier               alt
+yabai -m config mouse_action1                move
+yabai -m config mouse_action2                resize
+yabai -m config focus_follows_mouse          off
+yabai -m config mouse_follows_focus          off
+yabai -m config window_shadow                float
+yabai -m config window_opacity               off
+yabai -m config active_window_opacity        1.0
+yabai -m config normal_window_opacity        1.0
+yabai -m config window_opacity_duration      0.0
+yabai -m config external_bar                 all:0:0
+
+# ========== 规则 ==========
+yabai -m rule --add app="^系统偏好设置$" manage=off
+yabai -m rule --add app="^系统设置$" manage=off
+yabai -m rule --add app="^提醒事项$" manage=off
+yabai -m rule --add app="^关于本机$" manage=off
+yabai -m rule --add app="^访达$" manage=off
+
+# ========== 工作区管理 ==========
+# 保证有 10 个空间（幂等）
+SPACES_COUNT=$(yabai -m query --spaces | jq length)
+if [ "$SPACES_COUNT" -lt 10 ]; then
+    SPACES_TO_CREATE=$((10 - SPACES_COUNT))
+    for i in $(seq 1 $SPACES_TO_CREATE); do
+        yabai -m space --create
+    done
+fi
+if [ "$SPACES_COUNT" -gt 10 ]; then
+    for i in $(seq 11 $SPACES_COUNT); do
+        yabai -m space $i --destroy
+    done
+fi
+
+# 给所有空间命名并设置布局（动态 index，防止顺序错乱）
+for idx in $(yabai -m query --spaces | jq '.[].index'); do
+    yabai -m space $idx --label "space$idx"
+    yabai -m space $idx --layout bsp
+done
+
+echo "yabai configuration loaded.."
+
+# ========== 重要提示 ==========
+# 请在「系统设置」-「桌面与程序坞」里关闭
+# 「根据最近使用的情况自动重新排列空间」
+# 英文：System Settings → Desktop & Dock → "Automatically rearrange Spaces based on most recent use"（关闭）

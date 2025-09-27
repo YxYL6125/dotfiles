@@ -1,0 +1,72 @@
+# : << EOF
+# Oh my tmux!
+# 💛🩷💙🖤❤️🤍
+# ... (版权信息省略) ...
+
+# -- bindings ------------------------------------------------------------------
+tmux_conf_preserve_stock_bindings=false
+
+# -- session creation & windows & pane creation --------------------------------
+# ... (你原有的这部分配置保持不变，这里省略) ...
+tmux_conf_new_pane_retain_current_path=true
+
+# -- display -------------------------------------------------------------------
+tmux_conf_24b_colour=auto
+
+# -- theming -------------------------------------------------------------------
+# ... (你原有的主题配置保持不变，这里省略) ...
+
+# -- clipboard -----------------------------------------------------------------
+tmux_conf_copy_to_os_clipboard=false
+
+# -- urlscan -------------------------------------------------------------------
+tmux_conf_urlscan_options="--compact --dedupe"
+
+# -- user customizations -------------------------------------------------------
+
+# --- 需求 1: 集成 SSH 管理 (原生 fzf 方案) ---
+# 快捷键: prefix + s
+bind s display-popup -E "ssh \$(grep '^Host ' ~/.ssh/config | awk '{print \$2}' | grep -v '*' | fzf)"
+
+
+# --- 需求 2: 解决鼠标滚轮问题 (最终推荐配置) ---
+#
+# 开启 tmux 的鼠标模式。这是让滚轮能够滚动 tmux 窗格内容的前提。
+# 你之前遇到的问题（滚轮滚动历史命令）正是因为 `set -g mouse off` 导致的。
+#
+# !! 新的鼠标操作方式 !!
+# 1. 滚轮:      正常滚动窗格内容 (问题解决!)
+# 2. 文本选择:  按住 Shift 键 (在 macOS 上可能是 Option 键) + 鼠标左键拖拽。
+#
+# 这个配置在解决了滚轮问题的同时，也保留了通过快捷键进行原生文本选择的能力。
+set -g mouse on
+
+
+# 强制 Vi 模式
+set -g mode-keys vi
+
+# 自定义前缀
+unbind C-b
+set -g prefix `
+bind ` send-prefix
+
+# -- tpm -----------------------------------------------------------------------
+# ... (插件部分保持不变) ...
+tmux_conf_update_plugins_on_launch=true
+tmux_conf_update_plugins_on_reload=true
+tmux_conf_uninstall_plugins_on_reload=true
+
+# --- 插件列表 ---
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'rose-pine/tmux'
+# ... (其他 rose-pine 设置) ...
+set -g @rose_pine_window_separator '   '
+
+# ... (文件末尾的函数定义部分，保持原样) ...
+# ------------------------------------------------------------------------------
+# # /!\ do not remove the following line
+# EOF
+#
+# "$@"
+# # /!\ do not remove the previous line

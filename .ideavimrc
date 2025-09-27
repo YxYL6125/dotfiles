@@ -1,0 +1,80 @@
+" .ideavimrc is a configuration file for IdeaVim plugin. It uses
+"   the same commands as the original .vimrc configuration.
+" You can find a list of commands here: https://jb.gg/h38q75
+" Find more examples here: https://jb.gg/share-ideavimrc
+
+
+"" -- Suggested options --
+" Show a few lines of context around the cursor. Note that this makes the
+" text scroll if you mouse-click near the start or end of the window.
+" --- 1. 基础编辑器行为设置 ---
+set scrolloff=5         " 光标上下保留5行，保持上下文可见
+set incsearch           " 开启增量搜索，输入时即时高亮匹配
+set hlsearch            " 高亮所有搜索匹配项
+set ignorecase          " 搜索时忽略大小写
+set smartcase           " 当搜索词包含大写字母时，切换为大小写敏感搜索
+set nu                  " 显示行号
+set relativenumber      " 显示相对行号，便于垂直移动
+
+" --- 2. 插件管理与加载 (使用 vim-plug) ---
+" 注意: IdeaVim 的插件支持有限，请确保插件兼容。
+" Plug 命令在 IdeaVim 中可能无法直接工作，需要通过 :PlugInstall 等手动执行。
+" 推荐使用 IdeaVim 内置的插件管理器指令。
+
+" 启用 IdeaVim 插件支持
+set extensions
+
+" 插件列表 (示例，部分插件可能不被 IdeaVim 完全支持)
+Plug 'easymotion/vim-easymotion'      " 已通过 set extensions 启用
+Plug 'tpope/vim-commentary'           " 强大的注释工具
+Plug 'machakann/vim-highlightedyank'  " 高亮复制的文本
+
+
+" --- 3. 全局 Leader 键与核心快捷键 ---
+let mapleader = ','
+
+" 避免使用 Q 进入 Ex 模式，将其用于代码格式化 (更实用)
+nnoremap Q gq
+
+" 使用 <Leader>c 注释/取消注释代码 (利用 vim-commentary)
+" gc 在 Visual 模式下同样生效
+nmap <Leader>c gcc
+
+" --- 4. vim-easymotion 完美配置 (以 ',' 为核心) ---
+" 使用 ',' 作为专属 Leader 键，实现最快跳转
+" let g:EasyMotion_leader_key = ','
+let g:EasyMotion_leader_key = '<Space>'
+
+let g:EasyMotion_keys = 'asdfghjklqwertyuiopzxcvbnm'
+
+" 禁用 EasyMotion 的默认映射，我们完全自定义
+let g:EasyMotion_do_mapping = 0
+
+" --- 定义通用映射函数 (nmap, vmap, omap) ---
+function! s:EasyMotionMap(key, plug)
+  execute 'nmap' a:key '<Plug>(easymotion-' . a:plug . ')'
+  execute 'vmap' a:key '<Plug>(easymotion-' . a:plug . ')'
+  execute 'omap' a:key '<Plug>(easymotion-' . a:plug . ')'
+endfunction
+
+" 定义核心双向全屏跳转
+" 定义核心双向全屏跳转
+" call s:EasyMotionMap(',s', 's')      " ,s -> 全屏搜索任意字符 (最常用)
+" call s:EasyMotionMap(',w', 'bd-w')    " ,w -> 全屏单词搜索
+" call s:EasyMotionMap(',l', 'bd-jk')   " ,l -> 全屏行搜索
+call s:EasyMotionMap('<Space>s', 's')      " <Space>s -> 全屏搜索任意字符
+call s:EasyMotionMap('<Space>w', 'bd-w')    " <Space>w -> 全屏单词搜索
+call s:EasyMotionMap('<Space>l', 'bd-jk')   " <Space>l -> 全屏行搜索
+
+
+" --- 5. 与 IDE 功能的深度集成 ---
+" 使用 'set' 来启用特定的 IdeaVim 扩展功能
+set commentary          " 启用 vim-commentary
+set highlightedyank     " 启用 vim-highlightedyank
+
+" --- 6. 输入法自动切换 (实验性功能) ---
+" 注意: 这个功能在不同操作系统和 IDE 版本上表现可能不稳定
+set keep-english-in-normal
+" set keep-english-in-normal-and-restore-in-insert " 如果上一行工作不理想，可以尝试这个
+
+" ======================== .ideavimrc 配置结束 ===========================
