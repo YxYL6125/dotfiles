@@ -1,15 +1,23 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- Treesitter configuration activated
 
 -- Customize Treesitter
 
 ---@type LazySpec
 return {
-    "nvim-treesitter/nvim-treesitter",
-    opts = {
-        ensure_installed = {
-            "lua",
-            "vim",
-            -- add more arguments for adding more treesitter parsers
-        },
+  "nvim-treesitter/nvim-treesitter",
+  opts = {
+    ensure_installed = {
+      "go",
+      "gomod",
+      "gosum",
+      "gowork",
+      "lua",
+      "query",
+      "thrift",
+      "vim",
+      "java", -- Java语法支持
+      "python", -- Python 语法支持
+      -- add more arguments for adding more treesitter parsers
     },
+  },
 }

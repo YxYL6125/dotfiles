@@ -1,39 +1,82 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
--- AstroUI provides the basis for configuring the AstroNvim User Interface
--- Configuration documentation can be found with `:h astroui`
--- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
---       as this provides autocomplete and documentation while editing
+local transparent_groups = {
+  "Normal",
+  "NormalNC",
+  "NormalFloat",
+  "FloatBorder",
+  "FloatTitle",
+  "SignColumn",
+  "EndOfBuffer",
+  "WinSeparator",
+  "VertSplit",
+  "StatusLine",
+  "StatusLineNC",
+  "TabLine",
+  "TabLineFill",
+  "TabLineSel",
+  "Pmenu",
+  "PmenuSbar",
+  "Folded",
+  "WinBar",
+  "WinBarNC",
+  "NeoTreeNormal",
+  "NeoTreeNormalNC",
+  "NeoTreeEndOfBuffer",
+  "NeoTreeWinSeparator",
+  "NeoTreeVertSplit",
+  "NeoTreeFloatBorder",
+  "NeoTreeTitleBar",
+}
 
 ---@type LazySpec
 return {
+  {
+    "AstroNvim/astrotheme",
+    optional = true,
+    opts = {
+      style = {
+        transparent = true,
+        neotree = false,
+      },
+      highlights = {
+        global = {
+          modify_hl_groups = function(hl, c)
+            for _, group in ipairs(transparent_groups) do
+              hl[group] = hl[group] or {}
+              hl[group].bg = c.none
+            end
+
+            hl.FloatBorder.fg = c.ui.border
+            hl.FloatTitle.fg = c.ui.title
+            hl.PmenuThumb = { fg = c.none, bg = c.ui.scrollbar, blend = 0 }
+            hl.NeoTreeCursorLine = { bg = c.ui.selection, bold = true }
+          end,
+        },
+      },
+    },
+  },
+  {
     "AstroNvim/astroui",
+    version = false,
     ---@type AstroUIOpts
     opts = {
-        -- change colorscheme
-        colorscheme = "astrodark",
-        -- AstroUI allows you to easily modify highlight groups easily for any and all colorschemes
-        highlights = {
-            init = { -- this table overrides highlights in all themes
-                -- Normal = { bg = "#000000" },
-            },
-            astrodark = { -- a table of overrides/changes when applying the astrotheme theme
-                -- Normal = { bg = "#000000" },
-            },
+      colorscheme = "astrodark",
+      highlights = {
+        astrodark = {
+          CursorLineNr = { fg = "#ffd173", bold = true },
         },
-        -- Icons can be configured throughout the interface
-        icons = {
-            -- configure the loading of the lsp in the status line
-            LSPLoading1 = "⠋",
-            LSPLoading2 = "⠙",
-            LSPLoading3 = "⠹",
-            LSPLoading4 = "⠸",
-            LSPLoading5 = "⠼",
-            LSPLoading6 = "⠴",
-            LSPLoading7 = "⠦",
-            LSPLoading8 = "⠧",
-            LSPLoading9 = "⠇",
-            LSPLoading10 = "⠏",
-        },
+      },
+      icons = {
+        LSPLoading1 = "⠋",
+        LSPLoading2 = "⠙",
+        LSPLoading3 = "⠹",
+        LSPLoading4 = "⠸",
+        LSPLoading5 = "⠼",
+        LSPLoading6 = "⠴",
+        LSPLoading7 = "⠦",
+        LSPLoading8 = "⠧",
+        LSPLoading9 = "⠇",
+        LSPLoading10 = "⠏",
+      },
     },
+  },
 }

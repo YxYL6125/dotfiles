@@ -1,106 +1,161 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
-
--- AstroLSP allows you to customize the features in AstroNvim's LSP configuration engine
--- Configuration documentation can be found with `:h astrolsp`
--- NOTE: We highly recommend setting up the Lua Language Server (`:LspInstall lua_ls`)
---       as this provides autocomplete and documentation while editing
-
 ---@type LazySpec
 return {
-    "AstroNvim/astrolsp",
-    ---@type AstroLSPOpts
-    opts = {
-        -- Configuration table of features provided by AstroLSP
-        features = {
-            codelens = true,  -- enable/disable codelens refresh on start
-            inlay_hints = false, -- enable/disable inlay hints on start
-            semantic_tokens = true, -- enable/disable semantic token highlighting
-        },
-        -- customize lsp formatting options
-        formatting = {
-            -- control auto formatting on save
-            format_on_save = {
-                enabled = true, -- enable or disable format on save globally
-                allow_filetypes = { -- enable format on save for specified filetypes only
-                    -- "go",
-                },
-                ignore_filetypes = { -- disable format on save for specified filetypes
-                    -- "python",
-                },
-            },
-            disabled = { -- disable formatting capabilities for the listed language servers
-                -- disable lua_ls formatting capability if you want to use StyLua to format your lua code
-                -- "lua_ls",
-            },
-            timeout_ms = 1000, -- default format timeout
-            -- filter = function(client) -- fully override the default formatting function
-            --   return true
-            -- end
-        },
-        -- enable servers that you already have installed without mason
-        servers = {
-            -- "pyright"
-        },
-        -- customize language server configuration options passed to `lspconfig`
-        ---@diagnostic disable: missing-fields
-        config = {
-            -- clangd = { capabilities = { offsetEncoding = "utf-8" } },
-        },
-        -- customize how language servers are attached
-        handlers = {
-            -- a function without a key is simply the default handler, functions take two parameters, the server name and the configured options table for that server
-            -- function(server, opts) require("lspconfig")[server].setup(opts) end
-
-            -- the key is the server that is being setup with `lspconfig`
-            -- rust_analyzer = false, -- setting a handler to false will disable the set up of that language server
-            -- pyright = function(_, opts) require("lspconfig").pyright.setup(opts) end -- or a custom handler function can be passed
-        },
-        -- Configure buffer local auto commands to add when attaching a language server
-        autocmds = {
-            -- first key is the `augroup` to add the auto commands to (:h augroup)
-            lsp_codelens_refresh = {
-                -- Optional condition to create/delete auto command group
-                -- can either be a string of a client capability or a function of `fun(client, bufnr): boolean`
-                -- condition will be resolved for each client on each execution and if it ever fails for all clients,
-                -- the auto commands will be deleted for that buffer
-                cond = "textDocument/codeLens",
-                -- cond = function(client, bufnr) return client.name == "lua_ls" end,
-                -- list of auto commands to set
-                {
-                    -- events to trigger
-                    event = { "InsertLeave", "BufEnter" },
-                    -- the rest of the autocmd options (:h nvim_create_autocmd)
-                    desc = "Refresh codelens (buffer)",
-                    callback = function(args)
-                        if require("astrolsp").config.features.codelens then vim.lsp.codelens.refresh { bufnr = args.buf } end
-                    end,
-                },
-            },
-        },
-        -- mappings to be set up on attaching of a language server
-        mappings = {
-            n = {
-                -- a `cond` key can provided as the string of a server capability to be required to attach, or a function with `client` and `bufnr` parameters from the `on_attach` that returns a boolean
-                gD = {
-                    function() vim.lsp.buf.declaration() end,
-                    desc = "Declaration of current symbol",
-                    cond = "textDocument/declaration",
-                },
-                ["<Leader>uY"] = {
-                    function() require("astrolsp.toggles").buffer_semantic_tokens() end,
-                    desc = "Toggle LSP semantic highlight (buffer)",
-                    cond = function(client)
-                        return client.supports_method "textDocument/semanticTokens/full" and
-                        vim.lsp.semantic_tokens ~= nil
-                    end,
-                },
-            },
-        },
-        -- A custom `on_attach` function to be run after the default `on_attach` function
-        -- takes two parameters `client` and `bufnr`  (`:h lspconfig-setup`)
-        on_attach = function(client, bufnr)
-            -- this would disable semanticTokensProvider for all clients
-            -- client.server_capabilities.semanticTokensProvider = nil
-        end,
+  "AstroNvim/astrolsp",
+  version = false,
+  ---@type AstroLSPOpts
+  opts = {
+    features = {
+      codelens = true,
+      inlay_hints = false,
+      semantic_tokens = true,
     },
+    formatting = {
+      format_on_save = {
+        enabled = true,
+        allow_filetypes = {},
+        ignore_filetypes = {},
+      },
+      disabled = {},
+      timeout_ms = 1000,
+    },
+    servers = {
+      "gopls",
+      "pyright",
+    },
+    ---@diagnostic disable: missing-fields
+    config = {
+      gopls = {
+        settings = {
+          gopls = {
+            analyses = {
+              fieldalignment = true,
+              nilness = true,
+              shadow = true,
+              unusedparams = true,
+            },
+            codelenses = {
+              gc_details = true,
+              generate = true,
+              regenerate_cgo = true,
+              run_govulncheck = true,
+              test = true,
+              tidy = true,
+              upgrade_dependency = true,
+              vendor = true,
+            },
+            completeUnimported = true,
+            directoryFilters = { "-.git", "-.idea", "-.vscode", "-node_modules" },
+            gofumpt = true,
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+            semanticTokens = true,
+            staticcheck = true,
+            usePlaceholders = true,
+          },
+        },
+      },
+      pyright = {
+        settings = {
+          pyright = {
+            disableOrganizeImports = false,
+          },
+          python = {
+            analysis = {
+              autoImportCompletions = true,
+              autoSearchPaths = true,
+              diagnosticMode = "workspace",
+              typeCheckingMode = "basic",
+              useLibraryCodeForTypes = true,
+            },
+          },
+        },
+      },
+    },
+    autocmds = {
+      lsp_codelens_refresh = {
+        cond = "textDocument/codeLens",
+        {
+          event = { "InsertLeave", "BufEnter" },
+          desc = "Refresh codelens (buffer)",
+          callback = function(args)
+            if require("astrolsp").config.features.codelens then vim.lsp.codelens.refresh { bufnr = args.buf } end
+          end,
+        },
+      },
+      go_format_on_save = {
+        {
+          event = "BufWritePre",
+          desc = "Go organize imports + format",
+          callback = function(args)
+            local bufnr = args.buf
+            if vim.bo[bufnr].filetype ~= "go" then return end
+            vim.lsp.buf.code_action {
+              bufnr = bufnr,
+              context = { only = { "source.organizeImports" }, diagnostics = {} },
+              apply = true,
+            }
+            vim.lsp.buf.format { bufnr = bufnr, async = false }
+          end,
+        },
+      },
+    },
+    mappings = {
+      n = {
+        gD = {
+          function() vim.lsp.buf.declaration() end,
+          desc = "Declaration of current symbol",
+          cond = "textDocument/declaration",
+        },
+        gd = {
+          function() vim.lsp.buf.definition() end,
+          desc = "Show definition",
+          cond = "textDocument/definition",
+        },
+        gi = {
+          function() vim.lsp.buf.implementation() end,
+          desc = "Show implementations",
+          cond = "textDocument/implementation",
+        },
+        gr = {
+          function() vim.lsp.buf.references() end,
+          desc = "Show references",
+          cond = "textDocument/references",
+        },
+        gy = {
+          function() vim.lsp.buf.type_definition() end,
+          desc = "Show type definition",
+          cond = "textDocument/typeDefinition",
+        },
+        ["<leader>cr"] = {
+          function() vim.lsp.buf.rename() end,
+          desc = "Rename symbol",
+          cond = "textDocument/rename",
+        },
+        ["<leader>ca"] = {
+          function() vim.lsp.buf.code_action() end,
+          desc = "Code actions",
+          cond = "textDocument/codeAction",
+        },
+        K = {
+          function() vim.lsp.buf.hover() end,
+          desc = "Hover symbol details",
+          cond = "textDocument/hover",
+        },
+        ["<Leader>uY"] = {
+          function() require("astrolsp.toggles").buffer_semantic_tokens() end,
+          desc = "Toggle LSP semantic highlight (buffer)",
+          cond = function(client)
+            return client.supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens ~= nil
+          end,
+        },
+      },
+    },
+  },
 }

@@ -70,7 +70,7 @@ cmd + alt - r : /usr/bin/env osascript <<< "display notification \"正在重启 
 
 # ================================ 多桌面配置  ================================
 # 创建一个新桌面，并把当前活动的窗口发送到新桌面，并且自动跳转到新桌面 需要jq支持 brew install jq
-shift + cmd - n : yabai -m space --create && index="$(yabai -m query --spaces --display | jq '.| length')" && yabai -m window --space "${index}" && yabai -m space --focus "${index}"
+# shift + cmd - n : yabai -m space --create && index="$(yabai -m query --spaces --display | jq '.| length')" && yabai -m window --space "${index}" && yabai -m space --focus "${index}"
 
 # 切换回最近的一个桌面
 alt - x : yabai -m space --focus recent
@@ -113,6 +113,8 @@ shift + alt - 9 : yabai -m window --space 9
 # ================================ APPS ================================
 # Ghostty
 cmd + alt - return : open -a Ghostty
+alt - w : open -a lark
+alt - d : open -a discord
 
 # ================================ 多显示器配置 ================================
 # focus monitora : 

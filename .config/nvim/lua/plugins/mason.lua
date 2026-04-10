@@ -1,28 +1,42 @@
-if true then return {} end -- WARN: REMOVE THIS LINE TO ACTIVATE THIS FILE
+-- Mason configuration activated
 
 -- Customize Mason
 
 ---@type LazySpec
 return {
-    -- use mason-tool-installer for automatically installing Mason packages
-    {
-        "WhoIsSethDaniel/mason-tool-installer.nvim",
-        -- overrides `require("mason-tool-installer").setup(...)`
-        opts = {
-            -- Make sure to use the names found in `:Mason`
-            ensure_installed = {
-                -- install language servers
-                "lua-language-server",
+  -- use mason-tool-installer for automatically installing Mason packages
+  {
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    -- overrides `require("mason-tool-installer").setup(...)`
+    opts = {
+      run_on_start = false,
+      start_delay = 3000,
+      debounce_hours = 12,
+      -- Make sure to use the names found in `:Mason`
+      ensure_installed = {
+        -- install language servers
+        "lua-language-server",
+        "jdtls", -- Java Language Server
+        "pyright", -- Python LSP
 
-                -- install formatters
-                "stylua",
+        -- install formatters
+        "stylua",
+        "black",
+        "isort",
 
-                -- install debuggers
-                "debugpy",
+        -- install linters
+        "golangci-lint",
+        "ruff",
+        "mypy",
 
-                -- install any other package
-                "tree-sitter-cli",
-            },
-        },
+        -- install debuggers
+        "debugpy",
+        "java-debug-adapter", -- Java调试器
+        "java-test", -- Java测试运行器
+
+        -- install any other package
+        "tree-sitter-cli",
+      },
     },
+  },
 }

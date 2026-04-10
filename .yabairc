@@ -5,7 +5,7 @@ sudo yabai --load-sa
 yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
 
 # ========== Debug 日志 ==========
-yabai -m config debug_output on
+yabai -m config debug_output off
 
 # ========== 窗口平铺布局（启动时为所有空间设置 bsp） ==========
 for idx in $(yabai -m query --spaces | jq '.[].index'); do
