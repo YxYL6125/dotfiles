@@ -1,0 +1,8 @@
+# ~/.config/yazi/keymap.toml — 启用 z/Z 快捷跳转
+# 说明：z 跳最近高权重目录；Z 交互选择（如果你的构建支持）
+[keymap]
+[keymap.manager]
+# 常用：zoxide 快速跳转
+"z" = "plugin zoxide.jump"
+"Z" = "plugin zoxide.query"
+

@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+
+# Shell/editor history and swap
+.bash_history
+.zsh_history
+.python_history
+.viminfo
+*.swp
+*.swo
+
+# Secrets and credentials
+.ssh/
+.gnupg/
+.android/
+.zshrc.local
+.config/raycast/config.json
+.config/spotify-tui/client.yml
+
+# Tool state / cache
+.cache/
+.local/
+.Trash/
+.claude/
+.codex/
+.cursor/
+.gemini/
+.hermes/
+.config/yadm/
+.config/clash/
+.config/cmus/
+.config/uv/uv-receipt.json
+
+# Generated or nested-repo content
+.config/goose/config.yaml.bak*
+.config/goose/tunnel.lock
+.config/goose/mcp-hermit/
+.config/sketchybar/.git/
+.config/nvim/.git/
+.config/nvim/.nvimlog
+.config/nvim/.omx/

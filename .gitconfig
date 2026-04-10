@@ -1,0 +1,16 @@
+[user]
+	name = yangchen.6125
+	email = yangchen.6125@bytedance.com
+
+[url "ssh://yangchen.6125@git.byted.org/"]
+    insteadOf = https://git.byted.org/
+
+[url "git@code.byted.org:"]
+    insteadOf = https://code.byted.org/
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[safe]
+	directory = *
