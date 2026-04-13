@@ -17,6 +17,7 @@ return {
       "vim",
       "java", -- Java语法支持
       "python", -- Python 语法支持
+      "rust", -- Rust 语法支持
       -- add more arguments for adding more treesitter parsers
     },
   },

@@ -18,6 +18,7 @@ return {
         "lua-language-server",
         "jdtls", -- Java Language Server
         "pyright", -- Python LSP
+        "rust-analyzer", -- Rust LSP
 
         -- install formatters
         "stylua",
@@ -33,6 +34,7 @@ return {
         "debugpy",
         "java-debug-adapter", -- Java调试器
         "java-test", -- Java测试运行器
+        "codelldb", -- Rust 调试器
 
         -- install any other package
         "tree-sitter-cli",

@@ -21,6 +21,7 @@ return {
     servers = {
       "gopls",
       "pyright",
+      "rust_analyzer",
     },
     ---@diagnostic disable: missing-fields
     config = {
