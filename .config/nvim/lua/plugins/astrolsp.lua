@@ -78,6 +78,9 @@ return {
           },
         },
       },
+      rust_analyzer = {
+        cmd = { "/Users/bytedance/.cargo/bin/rust-analyzer" },
+      },
     },
     autocmds = {
       lsp_codelens_refresh = {
