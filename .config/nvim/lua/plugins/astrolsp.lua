@@ -79,7 +79,7 @@ return {
         },
       },
       rust_analyzer = {
-        cmd = { "/Users/bytedance/.cargo/bin/rust-analyzer" },
+        cmd = { "/Users/bytedance/.local/share/nvim/mason/bin/rust-analyzer" },
       },
     },
     autocmds = {
