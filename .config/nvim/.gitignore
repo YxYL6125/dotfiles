@@ -1,0 +1,8 @@
+.DS_Store
+*.swp
+*.swo
+*~
+.nvim.log
+lazy-lock.bak.json
+.omx/
+.worktrees/
