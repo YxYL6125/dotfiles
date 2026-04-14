@@ -30,6 +30,9 @@
 | `<leader>fr` | 最近文件 | Global | `lua/plugins/astrocore.lua:60` |
 | `<leader>fs` | 工作区 symbols | Global | `lua/plugins/astrocore.lua:64` |
 | `<leader>fd` | 当前 buffer diagnostics | Global | `lua/plugins/astrocore.lua:68` |
+| `<C-s>` | 保存文件 | Global | `lua/plugins/astrocore.lua:78` |
+| `<leader>s` | 搜索文本 | Global | `lua/plugins/astrocore.lua:79` |
+| `<leader>w` | 跳到下一个窗口 | Global | `lua/plugins/astrocore.lua:83` |
 | `<leader>tt` | 浮动终端 | Global | `lua/plugins/astrocore.lua:87` |
 
 ### 1.2 LSP
@@ -77,8 +80,8 @@
 
 | Key | Action | Scope | Source |
 |---|---|---|---|
-| `<leader>fw` | Flash word jump | Global | `lua/plugins/flash.lua:10` |
-| `<leader>fc` | Flash char search | Global | `lua/plugins/flash.lua:22` |
+|| `<leader>w` | Flash word jump | Global | `lua/plugins/flash.lua:13` |
+|| `<leader>s` | Flash char search | Global | `lua/plugins/flash.lua:21` |
 
 ### 1.6 AI 补全 / Trae
 

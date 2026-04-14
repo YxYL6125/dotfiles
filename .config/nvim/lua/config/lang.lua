@@ -43,6 +43,78 @@ function M.resolve_debugpy_python()
   )
 end
 
+local function code_action_label(action)
+  local title = action.title or "Untitled"
+  if action.kind and action.kind ~= "" then return title .. " [" .. action.kind .. "]" end
+  return title
+end
+
+local function apply_code_action(action, client)
+  if action.edit then
+    vim.lsp.util.apply_workspace_edit(action.edit, client and client.offset_encoding or "utf-16")
+  end
+
+  if action.command then vim.lsp.buf.execute_command(action.command) end
+end
+
+function M.smart_code_action(bufnr, opts)
+  bufnr = bufnr or 0
+  opts = opts or {}
+
+  local params = vim.lsp.util.make_range_params()
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  params.context = {
+    diagnostics = opts.diagnostics == false and {} or vim.diagnostic.get(bufnr, { lnum = cursor[1] - 1 }),
+    only = opts.only,
+    triggerKind = 1,
+  }
+
+  vim.lsp.buf_request_all(bufnr, "textDocument/codeAction", params, function(responses)
+    local items = {}
+
+    for client_id, response in pairs(responses or {}) do
+      local client = vim.lsp.get_client_by_id(client_id)
+      if client and response and response.result then
+        for _, action in ipairs(response.result) do
+          if not action.disabled then
+            table.insert(items, { action = action, client = client })
+          end
+        end
+      end
+    end
+
+    if vim.tbl_isempty(items) then
+      if opts.notify ~= false then
+        vim.schedule(function() vim.notify("No code actions available", vim.log.levels.INFO) end)
+      end
+      return
+    end
+
+    table.sort(items, function(a, b)
+      if a.action.isPreferred ~= b.action.isPreferred then return a.action.isPreferred end
+      return code_action_label(a.action) < code_action_label(b.action)
+    end)
+
+    local function prompt_select()
+      vim.schedule(function()
+        vim.ui.select(items, {
+          prompt = opts.prompt or "Code actions",
+          format_item = function(item) return code_action_label(item.action) end,
+        }, function(choice)
+          if choice then apply_code_action(choice.action, choice.client) end
+        end)
+      end)
+    end
+
+    if opts.apply == true and #items == 1 then
+      vim.schedule(function() apply_code_action(items[1].action, items[1].client) end)
+      return
+    end
+
+    prompt_select()
+  end)
+end
+
 function M.resolve_go_delve()
   return first_existing(vim.fn.stdpath "data" .. "/mason/bin/dlv", vim.fn.exepath "dlv", "dlv")
 end

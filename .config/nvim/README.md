@@ -51,7 +51,8 @@ LSP
 - `gy` type definition
 - `K` hover
 - `<leader>cr` rename
-- `<leader>ca` code action
+- `<leader>ca` smart code actions
+- `<M-CR>` / `<A-CR>` smart code actions (Alt+Enter, if your terminal sends it)
 
 Harpoon
 

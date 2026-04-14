@@ -39,15 +39,17 @@ local function thrift_references_or_search(bufnr)
   thrift_search_references(bufnr)
 end
 
+local lang = require "config.lang"
+
 local function go_organize_imports_and_format(bufnr)
   if vim.bo[bufnr].filetype ~= "go" then return end
   if vim.tbl_isempty(vim.lsp.get_clients { bufnr = bufnr, name = "gopls" }) then return end
 
-  vim.lsp.buf.code_action {
-    bufnr = bufnr,
-    context = { only = { "source.organizeImports" }, diagnostics = {} },
+  lang.smart_code_action(bufnr, {
+    only = { "source.organizeImports" },
     apply = true,
-  }
+    notify = false,
+  })
   vim.lsp.buf.format { bufnr = bufnr, async = false }
 end
 
@@ -199,7 +201,7 @@ return {
           cond = "textDocument/rename",
         },
         ["<leader>ca"] = {
-          function() vim.lsp.buf.code_action() end,
+          function() lang.smart_code_action(0) end,
           desc = "Code actions",
           cond = "textDocument/codeAction",
         },

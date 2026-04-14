@@ -49,33 +49,49 @@ return {
           desc = "Close buffer from tabline",
         },
         ["<Leader>bn"] = { "<cmd>enew<cr>", desc = "New buffer" },
-        ["<Leader>ff"] = {
+        ["<leader>ff"] = {
           function() require("snacks").picker.files() end,
           desc = "Find files",
         },
-        ["<Leader>fg"] = {
+        ["<leader>fg"] = {
           function() require("snacks").picker.grep() end,
           desc = "Find text",
         },
-        ["<Leader>fr"] = {
+        ["<leader>fr"] = {
           function() require("snacks").picker.recent() end,
           desc = "Recent files",
         },
-        ["<Leader>fs"] = {
+        ["<leader>fs"] = {
           function() require("snacks").picker.lsp_symbols() end,
           desc = "Workspace symbols",
         },
-        ["<Leader>fd"] = {
+        ["<leader>fd"] = {
           function() require("snacks").picker.diagnostics_buffer() end,
           desc = "Buffer diagnostics",
         },
-        ["<Leader>tt"] = { "<cmd>ToggleTerm direction=float<cr>", desc = "Floating terminal" },
+        ["<leader>tt"] = { "<cmd>ToggleTerm direction=float<cr>", desc = "Floating terminal" },
+        ["<leader>w"] = {
+          function() require("flash").jump { search = { mode = "word" } } end,
+          desc = "Flash word jump",
+        },
+        ["<leader>s"] = {
+          function() require("flash").jump { search = { mode = "char" } } end,
+          desc = "Flash char search",
+        },
+        ["<M-CR>"] = {
+          function() require("config.lang").smart_code_action(0) end,
+          desc = "Code actions",
+        },
+        ["<A-CR>"] = {
+          function() require("config.lang").smart_code_action(0) end,
+          desc = "Code actions",
+        },
         ["<Leader>cA"] = { "<cmd>CloudDevAttach<cr>", desc = "Cloud Dev attach workspace" },
         ["<Leader>cB"] = { "<cmd>CloudDevBind<cr>", desc = "Cloud Dev bind workspace" },
         ["<Leader>cE"] = { "<cmd>CloudDevSelect<cr>", desc = "Cloud Dev select environment" },
         ["<Leader>cS"] = { "<cmd>CloudDevStatus<cr>", desc = "Cloud Dev status" },
         ["<Leader>cU"] = { "<cmd>CloudDevUnbind<cr>", desc = "Cloud Dev unbind workspace" },
-        ["<Leader>w"] = { "<cmd>w<cr>", desc = "Save file" },
+        ["<C-s>"] = { "<cmd>w<cr>", desc = "Save file" },
       },
     },
   },
