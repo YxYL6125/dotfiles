@@ -19,7 +19,17 @@ end
 function M.first_existing(...) return first_existing(...) end
 
 function M.resolve_java_home()
-  return first_existing(vim.env.JAVA_HOME, vim.env.JDK21_HOME, "/Users/bytedance/workspace/env/jdk/jdk-21")
+  return first_existing(vim.env.JAVA_HOME, vim.env.JDK21_HOME, vim.env.HOME and (vim.env.HOME .. "/workspace/env/jdk/jdk-21") or nil)
+end
+
+function M.resolve_java_executable()
+  local java_home = M.resolve_java_home()
+  return first_existing(
+    java_home and (java_home .. "/bin/java") or nil,
+    vim.env.JDK21_HOME and (vim.env.JDK21_HOME .. "/bin/java") or nil,
+    vim.fn.exepath "java",
+    "java"
+  )
 end
 
 function M.resolve_lombok_jar() return first_existing(vim.fn.stdpath "data" .. "/mason/packages/jdtls/lombok.jar") end
@@ -35,6 +45,10 @@ end
 
 function M.resolve_go_delve()
   return first_existing(vim.fn.stdpath "data" .. "/mason/bin/dlv", vim.fn.exepath "dlv", "dlv")
+end
+
+function M.resolve_rust_analyzer()
+  return first_existing(vim.fn.stdpath "data" .. "/mason/bin/rust-analyzer", vim.fn.exepath "rust-analyzer", "rust-analyzer")
 end
 
 function M.resolve_thriftls()
@@ -63,25 +77,25 @@ function M.resolve_jdtls_bundles()
   local data = vim.fn.stdpath "data"
   local bundles = {}
 
-  vim.list_extend(
-    bundles,
-    vim.split(
-      vim.fn.glob(data .. "/mason/packages/java-debug-adapter/extension/server/*.jar"),
-      "\n",
-      { trimempty = true }
-    )
-  )
-  vim.list_extend(
-    bundles,
-    vim.split(vim.fn.glob(data .. "/mason/packages/java-test/extension/server/*.jar"), "\n", { trimempty = true })
-  )
+  local function add_glob(glob)
+    vim.list_extend(bundles, vim.split(vim.fn.glob(glob), "\n", { trimempty = true }))
+  end
+
+  add_glob(data .. "/mason/packages/java-debug-adapter/extension/server/*.jar")
+  add_glob(data .. "/mason/packages/java-test/extension/server/*junit*.jar")
+  add_glob(data .. "/mason/packages/java-test/extension/server/com.microsoft.java.test.plugin-*.jar")
+  add_glob(data .. "/mason/packages/java-test/extension/server/org.apiguardian.api_*.jar")
+  add_glob(data .. "/mason/packages/java-test/extension/server/org.opentest4j_*.jar")
+  add_glob(data .. "/mason/packages/java-test/extension/server/org.jacoco.core_*.jar")
 
   return bundles
 end
 
-function M.java_workspace_dir()
-  local project = vim.fs.basename(vim.fn.getcwd())
-  return vim.fn.stdpath "data" .. "/site/java/workspace-root/" .. project
+function M.java_workspace_dir(root_dir)
+  local source = root_dir and vim.fs.normalize(root_dir) or vim.fs.normalize(vim.fn.getcwd())
+  local project = vim.fs.basename(source)
+  local hash = vim.fn.sha256(source):sub(1, 12)
+  return vim.fn.stdpath "data" .. "/site/java/workspace-root/" .. project .. "-" .. hash
 end
 
 return M
