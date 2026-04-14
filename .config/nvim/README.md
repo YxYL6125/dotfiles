@@ -6,11 +6,11 @@ What is inside
 
 - AstroNvim + lazy.nvim plugin management
 - Java: nvim-jdtls, jdtls, java-debug-adapter, java-test
-- Go: gopls, gofumpt, goimports, delve
+- Go: gopls, delve
 - Python: pyright, black, isort, ruff, mypy, debugpy, nvim-dap-python
 - Navigation: Harpoon, Flash, Telescope FZF
 - Debugging: nvim-dap + nvim-dap-ui
-- UI: astrodark theme, smear-cursor
+- UI: astrodark theme
 
 Quick start
 
@@ -81,7 +81,7 @@ Language extras
 Notes
 
 - Java uses dedicated `nvim-jdtls` startup from `ftplugin/java.lua`, not generic `lspconfig` attach.
-- Go uses `gopls`, `goimports`, `gofumpt`, and `dlv` from `~/.local/bin` on this machine because Mason's latest Go tool packages are not compatible with the local Go 1.18 toolchain.
+- Go uses `gopls` and `dlv` from `~/.local/bin` on this machine because Mason's latest Go tool packages are not compatible with the local Go 1.18 toolchain.
 - Python DAP prefers Mason's `debugpy` virtualenv and falls back to system Python.
 - Java runtime config prefers `JAVA_HOME` / `JDK21_HOME` and falls back to the local JDK 21 path if present.
-- Template placeholder files still exist only where harmless; active behavior lives in `lua/plugins/*.lua`.
+- Dead template leftovers have been removed; active behavior lives in `lua/plugins/*.lua`.

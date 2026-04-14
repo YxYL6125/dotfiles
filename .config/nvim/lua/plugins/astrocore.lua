@@ -32,22 +32,6 @@ return {
         ignorecase = true,
       },
     },
-    autocmds = {
-      autosave = {
-        {
-          event = { "InsertLeave", "BufLeave", "FocusLost" },
-          desc = "Autosave file buffers",
-          callback = function(args)
-            local bufnr = args.buf
-            if not vim.api.nvim_buf_is_valid(bufnr) then return end
-            if not vim.bo[bufnr].modified or not vim.bo[bufnr].modifiable or vim.bo[bufnr].readonly then return end
-            if vim.bo[bufnr].buftype ~= "" then return end
-            if vim.api.nvim_buf_get_name(bufnr) == "" then return end
-            vim.api.nvim_buf_call(bufnr, function() vim.cmd "silent! update" end)
-          end,
-        },
-      },
-    },
     mappings = {
       n = {
         ["<leader><leader>"] = {
@@ -86,6 +70,12 @@ return {
           desc = "Buffer diagnostics",
         },
         ["<Leader>tt"] = { "<cmd>ToggleTerm direction=float<cr>", desc = "Floating terminal" },
+        ["<Leader>cA"] = { "<cmd>CloudDevAttach<cr>", desc = "Cloud Dev attach workspace" },
+        ["<Leader>cB"] = { "<cmd>CloudDevBind<cr>", desc = "Cloud Dev bind workspace" },
+        ["<Leader>cE"] = { "<cmd>CloudDevSelect<cr>", desc = "Cloud Dev select environment" },
+        ["<Leader>cS"] = { "<cmd>CloudDevStatus<cr>", desc = "Cloud Dev status" },
+        ["<Leader>cU"] = { "<cmd>CloudDevUnbind<cr>", desc = "Cloud Dev unbind workspace" },
+        ["<Leader>w"] = { "<cmd>w<cr>", desc = "Save file" },
       },
     },
   },

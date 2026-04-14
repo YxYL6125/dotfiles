@@ -39,6 +39,18 @@ local function thrift_references_or_search(bufnr)
   thrift_search_references(bufnr)
 end
 
+local function go_organize_imports_and_format(bufnr)
+  if vim.bo[bufnr].filetype ~= "go" then return end
+  if vim.tbl_isempty(vim.lsp.get_clients { bufnr = bufnr, name = "gopls" }) then return end
+
+  vim.lsp.buf.code_action {
+    bufnr = bufnr,
+    context = { only = { "source.organizeImports" }, diagnostics = {} },
+    apply = true,
+  }
+  vim.lsp.buf.format { bufnr = bufnr, async = false }
+end
+
 ---@type LazySpec
 return {
   "AstroNvim/astrolsp",
@@ -121,7 +133,7 @@ return {
         },
       },
       rust_analyzer = {
-        cmd = { "/Users/bytedance/.local/share/nvim/mason/bin/rust-analyzer" },
+        cmd = { require("config.lang").resolve_rust_analyzer() },
       },
       thriftls = {
         cmd = { require("config.lang").resolve_thriftls() or "thriftls" },
@@ -147,17 +159,8 @@ return {
       go_format_on_save = {
         {
           event = "BufWritePre",
-          desc = "Go organize imports + format",
-          callback = function(args)
-            local bufnr = args.buf
-            if vim.bo[bufnr].filetype ~= "go" then return end
-            vim.lsp.buf.code_action {
-              bufnr = bufnr,
-              context = { only = { "source.organizeImports" }, diagnostics = {} },
-              apply = true,
-            }
-            vim.lsp.buf.format { bufnr = bufnr, async = false }
-          end,
+          desc = "Go organize imports + format via gopls",
+          callback = function(args) go_organize_imports_and_format(args.buf) end,
         },
       },
     },
@@ -182,7 +185,7 @@ return {
           function() thrift_references_or_search(0) end,
           desc = "Show references",
           cond = function(client, bufnr)
-            return vim.bo[bufnr].filetype == "thrift" or client.supports_method "textDocument/references"
+            return vim.bo[bufnr].filetype == "thrift" or client:supports_method "textDocument/references"
           end,
         },
         gy = {
@@ -209,7 +212,7 @@ return {
           function() require("astrolsp.toggles").buffer_semantic_tokens() end,
           desc = "Toggle LSP semantic highlight (buffer)",
           cond = function(client)
-            return client.supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens ~= nil
+            return client:supports_method "textDocument/semanticTokens/full" and vim.lsp.semantic_tokens ~= nil
           end,
         },
       },

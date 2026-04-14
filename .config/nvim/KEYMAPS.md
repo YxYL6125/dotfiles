@@ -77,8 +77,8 @@
 
 | Key | Action | Scope | Source |
 |---|---|---|---|
-| `<leader>w` | Flash word jump | Global | `lua/plugins/flash.lua:10` |
-| `<leader>s` | Flash char search | Global | `lua/plugins/flash.lua:22` |
+| `<leader>fw` | Flash word jump | Global | `lua/plugins/flash.lua:10` |
+| `<leader>fc` | Flash char search | Global | `lua/plugins/flash.lua:22` |
 
 ### 1.6 AI 补全 / Trae
 
@@ -91,7 +91,26 @@
 
 > 说明：Trae 不再接管 `<Tab>`；`<Tab>` 继续留给 blink/snippet 补全链路。Trae 只在其支持的文件类型中生效，例如 `go`、`python`、`java`、`lua`、`javascript`、`typescript`、`rust`，不支持 `thrift`。
 
-### 1.7 文件类型专属
+### 1.7 Cloud Dev
+
+> 说明：当前实现已对接本机 `cloudide-cli`，并支持按当前 git 项目自动匹配 CloudIDE workspace。推荐主入口是 `:CloudDevAttach`：优先读取本地绑定，必要时自动匹配或弹出选择，若 workspace 未启动则自动 start 后再连接。UI 目前是轻量方案：`vim.ui.select` + 浮动终端，还不是完整 TUI 面板。
+
+| Key | Action | Scope | Source |
+|---|---|---|---|
+| `<leader>cA` | 按当前项目自动 attach CloudIDE workspace | Global | `lua/plugins/astrocore.lua:73` |
+| `<leader>cB` | 为当前项目绑定 CloudIDE workspace | Global | `lua/plugins/astrocore.lua:74` |
+| `<leader>cE` | 手动选择当前 session 的 CloudIDE workspace | Global | `lua/plugins/astrocore.lua:75` |
+| `<leader>cS` | 查看 Cloud Dev 状态 | Global | `lua/plugins/astrocore.lua:76` |
+| `<leader>cU` | 解绑当前项目的 CloudIDE workspace | Global | `lua/plugins/astrocore.lua:77` |
+| `:CloudDevStatus` | 查看 Cloud Dev CLI 可用性与当前 session 选中的 workspace | Global | `lua/plugins/clouddev.lua:482` |
+| `:CloudDevList` | 在浮动终端中查看 CloudIDE workspace 列表原始输出 | Global | `lua/plugins/clouddev.lua:486` |
+| `:CloudDevSelect` | 使用 `vim.ui.select` 手动选择当前 session 的 CloudIDE workspace | Global | `lua/plugins/clouddev.lua:496` |
+| `:CloudDevEnter` | 在浮动终端通过 SSH 进入当前 session 选中的 CloudIDE workspace | Global | `lua/plugins/clouddev.lua:506` |
+| `:CloudDevAttach` | 自动匹配/绑定/启动并连接当前项目对应的 CloudIDE workspace | Global | `lua/plugins/clouddev.lua:522` |
+| `:CloudDevBind` | 手动为当前 git 项目绑定 CloudIDE workspace | Global | `lua/plugins/clouddev.lua:533` |
+| `:CloudDevUnbind` | 清除当前 git 项目的 CloudIDE workspace 绑定 | Global | `lua/plugins/clouddev.lua:550` |
+
+### 1.8 文件类型专属
 
 #### Python
 
@@ -309,29 +328,29 @@
 此前 `保存` 与 `Flash` 的冲突已通过以下方式解决：
 
 - 启用 autosave
-- 释放 `<leader>w` 手动保存映射
-- 恢复 Flash：
-  - `<leader>w`：Flash word jump
-  - `<leader>s`：Flash char search
+- 保留 `<leader>w` 作为手动保存映射
+- 将 Flash 迁移到：
+  - `<leader>fw`：Flash word jump
+  - `<leader>fc`：Flash char search
 
 ### 3.2 你本地覆盖了 Astro 默认值的地方
 
 | Key | 当前生效 | 被覆盖的默认项 |
 |---|---|---|
-| `<leader>w` | Flash word jump（你自定义） | 覆盖了 Astro 默认保存映射；保存已改为 autosave |
+| `<leader>fw` | Flash word jump（你自定义） | 已从默认保存键迁出，不再覆盖保存 |
 | `]b` / `[b` | 你自定义 buffer 导航 | 默认也是 buffer 导航，语义一致 |
 | `gD` / `gd` / `gy` / `<leader>uY` | 你自定义 LSP 映射 | 默认也定义了这些键，语义基本一致 |
 | `<leader>tt` | 你自定义浮动终端 | 覆盖了 ToggleTerm 默认 `<leader>tt` / btm 终端（若安装 `btm`） |
-| `<leader>ca` / `<leader>cr` | 你使用较短的 code action / rename | 默认 Astro 更偏向 `<leader>la` / `<leader>lr` 这类 LSP 分组写法 |
+| `<leader>cA` / `<leader>cr` | 你使用较短的 Cloud Dev attach / rename | 默认 Astro 更偏向 `<leader>la` / `<leader>lr` 这类 LSP 分组写法 |
 
 ## 4. 建议你重点记忆的高频键
 
 ### 日常编辑
 
-- `<leader><leader>`：搜文件
-- `<leader>fg`：全文搜
-- `<leader>w`：Flash word jump
-- `<leader>s`：Flash char search
+- 保留 `<leader>w` 作为手动保存映射
+- 将 Flash 迁移到：
+  - `<leader>fw`：Flash word jump
+  - `<leader>fc`：Flash char search
 - `<leader>e`：文件树
 - `<leader>o`：聚焦文件树
 - `<leader>tt`：浮动终端

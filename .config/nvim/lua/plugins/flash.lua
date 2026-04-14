@@ -7,7 +7,7 @@ return {
   -- This will properly override the default AstroNvim keymaps.
   keys = {
     {
-      "<leader>w",
+      "<leader>fw",
       mode = { "n", "x", "o" },
       function()
         require("flash").jump {
@@ -19,7 +19,7 @@ return {
       desc = "Flash: Word",
     },
     {
-      "<leader>s",
+      "<leader>fc",
       mode = { "n", "x", "o" },
       function() require("flash").jump { search = { mode = "char" } } end,
       desc = "Flash: Char Search",
