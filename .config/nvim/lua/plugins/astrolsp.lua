@@ -22,6 +22,7 @@ return {
       "gopls",
       "pyright",
       "rust_analyzer",
+      "thriftls",
     },
     ---@diagnostic disable: missing-fields
     config = {
@@ -80,6 +81,15 @@ return {
       },
       rust_analyzer = {
         cmd = { "/Users/bytedance/.local/share/nvim/mason/bin/rust-analyzer" },
+      },
+      thriftls = {
+        cmd = { require("config.lang").resolve_thriftls() or "thriftls" },
+        filetypes = { "thrift" },
+        root_dir = function(bufnr, on_dir)
+          local util = require "lspconfig.util"
+          local fname = vim.api.nvim_buf_get_name(bufnr)
+          on_dir(util.root_pattern(".git", "buf.yaml", "buf.work.yaml")(fname) or vim.fs.dirname(fname))
+        end,
       },
     },
     autocmds = {

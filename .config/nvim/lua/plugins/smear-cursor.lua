@@ -2,6 +2,7 @@
 return {
   "sphamba/smear-cursor.nvim",
   event = "VeryLazy",
+  enabled = false,
 
   opts = {
     -- 您原有的配置，保持开启

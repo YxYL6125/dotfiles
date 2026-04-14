@@ -7,6 +7,15 @@ local function first_existing(...)
   end
 end
 
+local function first_gopath_bin(binary)
+  if not vim.env.GOPATH or vim.env.GOPATH == "" then return end
+
+  for _, entry in ipairs(vim.split(vim.env.GOPATH, ":", { trimempty = true })) do
+    local path = entry .. "/bin/" .. binary
+    if vim.uv.fs_stat(path) then return path end
+  end
+end
+
 function M.first_existing(...) return first_existing(...) end
 
 function M.resolve_java_home()
@@ -26,6 +35,16 @@ end
 
 function M.resolve_go_delve()
   return first_existing(vim.fn.stdpath "data" .. "/mason/bin/dlv", vim.fn.exepath "dlv", "dlv")
+end
+
+function M.resolve_thriftls()
+  local data = vim.fn.stdpath "data"
+  return first_existing(
+    data .. "/mason/bin/thriftls",
+    vim.fn.exepath "thriftls",
+    first_gopath_bin "thriftls",
+    (vim.env.HOME and (vim.env.HOME .. "/go/bin/thriftls") or nil)
+  )
 end
 
 function M.resolve_codelldb()
