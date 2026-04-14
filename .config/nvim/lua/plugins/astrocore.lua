@@ -1,3 +1,5 @@
+
+
 ---@type LazySpec
 return {
   "AstroNvim/astrocore",
@@ -33,6 +35,10 @@ return {
       },
     },
     mappings = {
+      i = {
+        ["jk"] = { "<Esc>", desc = "Exit insert mode" },
+        ["kj"] = { "<Esc>", desc = "Exit insert mode" },
+      },
       n = {
         ["<leader><leader>"] = {
           function() require("snacks").picker.files() end,

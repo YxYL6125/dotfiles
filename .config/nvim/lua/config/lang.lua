@@ -57,62 +57,119 @@ local function apply_code_action(action, client)
   if action.command then vim.lsp.buf.execute_command(action.command) end
 end
 
+local function buffer_position_encoding(bufnr, fallback)
+  for _, client in ipairs(vim.lsp.get_clients { bufnr = bufnr }) do
+    if client and client.offset_encoding then return client.offset_encoding end
+  end
+  return fallback or "utf-16"
+end
+
 function M.smart_code_action(bufnr, opts)
   bufnr = bufnr or 0
   opts = opts or {}
 
-  local params = vim.lsp.util.make_range_params()
+  local position_encoding = opts.position_encoding or buffer_position_encoding(bufnr, "utf-16")
   local cursor = vim.api.nvim_win_get_cursor(0)
-  params.context = {
-    diagnostics = opts.diagnostics == false and {} or vim.diagnostic.get(bufnr, { lnum = cursor[1] - 1 }),
-    only = opts.only,
-    triggerKind = 1,
-  }
+  local current_line = cursor[1] - 1
+  local diagnostics = {}
 
-  vim.lsp.buf_request_all(bufnr, "textDocument/codeAction", params, function(responses)
-    local items = {}
+  if opts.diagnostics ~= false then
+    diagnostics = vim.diagnostic.get(bufnr, { lnum = current_line })
+    if vim.tbl_isempty(diagnostics) then diagnostics = vim.diagnostic.get(bufnr) end
+  end
 
+  local function range_from_cursor()
+    local col = cursor[2]
+    return {
+      start = { line = current_line, character = col },
+      ["end"] = { line = current_line, character = col },
+    }
+  end
+
+  local function range_from_diagnostic(diagnostic)
+    return diagnostic and diagnostic.range or range_from_cursor()
+  end
+
+  local candidate_ranges = { range_from_cursor() }
+  for _, diagnostic in ipairs(diagnostics) do
+    if diagnostic.range then table.insert(candidate_ranges, range_from_diagnostic(diagnostic)) end
+  end
+
+  local seen = {}
+  local function collect_items(responses, items)
     for client_id, response in pairs(responses or {}) do
       local client = vim.lsp.get_client_by_id(client_id)
       if client and response and response.result then
         for _, action in ipairs(response.result) do
           if not action.disabled then
-            table.insert(items, { action = action, client = client })
+            local key = code_action_label(action) .. "|" .. tostring(action.kind or "")
+            if not seen[key] then
+              seen[key] = true
+              table.insert(items, { action = action, client = client })
+            end
           end
         end
       end
     end
+  end
 
-    if vim.tbl_isempty(items) then
-      if opts.notify ~= false then
-        vim.schedule(function() vim.notify("No code actions available", vim.log.levels.INFO) end)
+  local function request_for_range(range, on_done)
+    local params = vim.lsp.util.make_range_params(0, position_encoding)
+    params.range = range
+    params.context = {
+      diagnostics = diagnostics,
+      only = opts.only,
+      triggerKind = 1,
+    }
+    vim.lsp.buf_request_all(bufnr, "textDocument/codeAction", params, on_done)
+  end
+
+  local function run_candidate(index, items)
+    if index > #candidate_ranges then
+      if vim.tbl_isempty(items) then
+        if opts.notify ~= false then
+          vim.schedule(function() vim.notify("No code actions available", vim.log.levels.INFO) end)
+        end
+        return
       end
-      return
-    end
 
-    table.sort(items, function(a, b)
-      if a.action.isPreferred ~= b.action.isPreferred then return a.action.isPreferred end
-      return code_action_label(a.action) < code_action_label(b.action)
-    end)
-
-    local function prompt_select()
-      vim.schedule(function()
-        vim.ui.select(items, {
-          prompt = opts.prompt or "Code actions",
-          format_item = function(item) return code_action_label(item.action) end,
-        }, function(choice)
-          if choice then apply_code_action(choice.action, choice.client) end
-        end)
+      table.sort(items, function(a, b)
+        if a.action.isPreferred ~= b.action.isPreferred then return a.action.isPreferred end
+        return code_action_label(a.action) < code_action_label(b.action)
       end)
-    end
 
-    if opts.apply == true and #items == 1 then
-      vim.schedule(function() apply_code_action(items[1].action, items[1].client) end)
+      local function prompt_select()
+        vim.schedule(function()
+          vim.ui.select(items, {
+            prompt = opts.prompt or "Code actions",
+            format_item = function(item) return code_action_label(item.action) end,
+          }, function(choice)
+            if choice then apply_code_action(choice.action, choice.client) end
+          end)
+        end)
+      end
+
+      if opts.apply == true and #items == 1 then
+        vim.schedule(function() apply_code_action(items[1].action, items[1].client) end)
+        return
+      end
+
+      prompt_select()
       return
     end
 
-    prompt_select()
-  end)
+    request_for_range(candidate_ranges[index], function(responses)
+      local next_items = vim.deepcopy(items)
+      collect_items(responses, next_items)
+      if vim.tbl_isempty(next_items) then
+        run_candidate(index + 1, items)
+        return
+      end
+      run_candidate(#candidate_ranges + 1, next_items)
+    end)
+  end
+
+  run_candidate(1, {})
 end
 
 function M.resolve_go_delve()
