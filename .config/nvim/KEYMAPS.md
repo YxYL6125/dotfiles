@@ -128,9 +128,9 @@
 
 | Key | Action | Scope | Source |
 |---|---|---|---|
-| `<leader>gt` | 调试当前 test | Go | `ftplugin/go.lua:3` |
-| `<leader>gT` | 调试上一次 test | Go | `ftplugin/go.lua:4` |
-| `<leader>gi` | Organize imports | Go | `ftplugin/go.lua:6` |
+| `<leader>dt` | 调试当前 test | Go | `ftplugin/go.lua:3` |
+| `<leader>dT` | 调试上一次 test | Go | `ftplugin/go.lua:4` |
+| `<leader>oi` | Organize imports | Go | `ftplugin/go.lua:6` |
 
 #### Java
 
@@ -256,8 +256,7 @@
 | `<leader>tf` | 浮动终端 | Global | `toggleterm.lua:48` |
 | `<leader>th` | 水平终端 | Global | `toggleterm.lua:49` |
 | `<leader>tv` | 垂直终端 | Global | `toggleterm.lua:51` |
-| `<leader>tl` | LazyGit 浮动终端 | Global | `toggleterm.lua:23` |
-| `<leader>gg` | LazyGit 浮动终端 | Global | `toggleterm.lua:22` |
+| `<leader>tl` | LazyGit 浮动终端（兼容入口） | Global | `toggleterm.lua:23` |
 | `<leader>tn` | Node 终端 | Global | `toggleterm.lua:26` |
 | `<leader>tp` | Python 终端 | Global | `toggleterm.lua:46` |
 | `<leader>tu` | gdu 终端 | Global | `toggleterm.lua:37` |
@@ -268,7 +267,41 @@
 | `<C-K>` | 终端窗口向上跳转 | Terminal | `_astrocore_mappings.lua:169` |
 | `<C-L>` | 终端窗口向右跳转 | Terminal | `_astrocore_mappings.lua:170` |
 
-### 2.6 分屏 / Tab / 列表
+### 2.6 Git
+
+| Key | Action | Scope | Source |
+|---|---|---|---|
+| `<leader>gg` | Git 主面板（LazyGit，走 AstroNvim ToggleTerm 浮窗路径） | Global | `lua/plugins/git.lua` |
+| `<leader>gn` | Git 状态面板（Neogit） | Global | `lua/plugins/git.lua` |
+| `<leader>gc` | Git commit 面板（Neogit） | Global | `lua/plugins/git.lua` |
+| `<leader>gb` | Git branches | Global | `lua/plugins/git.lua` |
+| `<leader>ge` | Git changed files（status picker） | Global | `lua/plugins/git.lua` |
+| `<leader>gh` | Git 仓库提交历史（picker） | Global | `lua/plugins/git.lua` |
+| `<leader>gf` | 当前文件 Git history（picker） | Global | `lua/plugins/git.lua` |
+| `<leader>gF` | 当前文件 Git history（Diffview） | Global | `lua/plugins/git.lua` |
+| `<leader>gi` | Git tracked files | Global | `lua/plugins/git.lua` |
+| `<leader>go` | 在远端打开当前仓库/文件/commit/选区 | Normal / Visual | `lua/plugins/git.lua` |
+| `<leader>gD` | 打开 Diffview | Global | `lua/plugins/git.lua` |
+| `<leader>gH` | 仓库历史（Diffview） | Global | `lua/plugins/git.lua` |
+| `<leader>gq` | 关闭 Diffview | Global | `lua/plugins/git.lua` |
+| `<leader>gm` | 冲突列表（Quickfix） | Global | `lua/plugins/git.lua` |
+| `<leader>gv` | 当前分支对比基线分支（自动探测 origin/main / origin/master / main / master） | Global | `lua/plugins/git.lua` |
+| `<leader>gB` | toggle 当前行 blame | Global | `lua/plugins/git.lua` |
+| `<leader>gV` | 当前行 commit popup | Global | `lua/plugins/git.lua` |
+| `<leader>gl` | blame 当前行 | Buffer | `AstroNvim gitsigns.lua` |
+| `<leader>gL` | full blame 当前行 | Buffer | `AstroNvim gitsigns.lua` |
+| `<leader>gp` | 预览 hunk | Buffer | `AstroNvim gitsigns.lua` |
+| `<leader>gr` | reset hunk | Buffer / Visual | `AstroNvim gitsigns.lua` |
+| `<leader>gR` | reset buffer | Buffer | `AstroNvim gitsigns.lua` |
+| `<leader>gs` | stage/unstage hunk | Buffer / Visual | `AstroNvim gitsigns.lua` |
+| `<leader>gS` | stage buffer | Buffer | `AstroNvim gitsigns.lua` |
+| `<leader>gd` | 当前文件 diff | Buffer | `AstroNvim gitsigns.lua` |
+| `[g` / `]g` | 上一个 / 下一个 hunk | Buffer | `AstroNvim gitsigns.lua` |
+| `[G` / `]G` | 首个 / 末个 hunk | Buffer | `AstroNvim gitsigns.lua` |
+| `co` / `ct` / `cb` / `c0` | 冲突选 ours / theirs / both / none | Conflicted buffer | `git-conflict.nvim` |
+| `[x` / `]x` | 上一个 / 下一个冲突 | Conflicted buffer | `git-conflict.nvim` |
+
+### 2.7 分屏 / Tab / 列表
 
 | Key | Action | Scope | Source |
 |---|---|---|---|
@@ -286,7 +319,7 @@
 | `<leader>xq` | 打开 quickfix list | Global | `_astrocore_mappings.lua:139` |
 | `<leader>xl` | 打开 location list | Global | `_astrocore_mappings.lua:140` |
 
-### 2.7 UI / Toggle
+### 2.8 UI / Toggle
 
 | Key | Action | Scope | Source |
 |---|---|---|---|
@@ -310,7 +343,7 @@
 | `<leader>uw` | 切换自动换行 | Global | `_astrocore_mappings.lua:192` |
 | `<leader>uy` | 切换当前 buffer 语法高亮 | Global | `_astrocore_mappings.lua:193` |
 
-### 2.8 插件管理
+### 2.9 插件管理
 
 | Key | Action | Scope | Source |
 |---|---|---|---|
