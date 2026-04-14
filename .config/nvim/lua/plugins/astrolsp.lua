@@ -1,3 +1,44 @@
+local function thrift_workspace_root(bufnr)
+  for _, client in ipairs(vim.lsp.get_clients { bufnr = bufnr }) do
+    if client.name == "thriftls" then return client.config.root_dir end
+  end
+  return vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr)) or vim.fn.getcwd()
+end
+
+local function thrift_search_references(bufnr)
+  local word = vim.fn.expand "<cword>"
+  if word == "" then return end
+  require("snacks").picker.grep {
+    cwd = thrift_workspace_root(bufnr),
+    search = word,
+    regex = false,
+    glob = "*.thrift",
+    args = { "--word-regexp" },
+  }
+end
+
+local function thrift_references_or_search(bufnr)
+  local params = vim.lsp.util.make_position_params(0, "utf-8")
+  local result = vim.lsp.buf_request_sync(bufnr, "textDocument/references", {
+    textDocument = params.textDocument,
+    position = params.position,
+    context = { includeDeclaration = true },
+  }, 1000)
+
+  for client_id, response in pairs(result or {}) do
+    local client = vim.lsp.get_client_by_id(client_id)
+    if client and client.name == "thriftls" then
+      if response and not response.err and response.result and not vim.tbl_isempty(response.result) then
+        vim.lsp.buf.references()
+        return
+      end
+      break
+    end
+  end
+
+  thrift_search_references(bufnr)
+end
+
 ---@type LazySpec
 return {
   "AstroNvim/astrolsp",
@@ -138,9 +179,11 @@ return {
           cond = "textDocument/implementation",
         },
         gr = {
-          function() vim.lsp.buf.references() end,
+          function() thrift_references_or_search(0) end,
           desc = "Show references",
-          cond = "textDocument/references",
+          cond = function(client, bufnr)
+            return vim.bo[bufnr].filetype == "thrift" or client.supports_method "textDocument/references"
+          end,
         },
         gy = {
           function() vim.lsp.buf.type_definition() end,
