@@ -1,0 +1,76 @@
+local M = {}
+
+M.known_plugin_goals = {
+  ["avro-maven-plugin"] = { prefix = "avro", goals = { "help", "idl", "protocol", "schema" } },
+  ["build-helper-maven-plugin"] = {
+    prefix = "build-helper",
+    goals = { "add-resource", "add-source", "add-test-resource", "add-test-source", "attach-artifact", "help", "parse-version" },
+  },
+  ["exec-maven-plugin"] = { prefix = "exec", goals = { "exec", "help", "java" } },
+  ["flatten-maven-plugin"] = { prefix = "flatten", goals = { "clean", "flatten", "help" } },
+  ["flyway-maven-plugin"] = { prefix = "flyway", goals = { "baseline", "clean", "help", "info", "migrate", "repair", "undo", "validate" } },
+  ["frontend-maven-plugin"] = {
+    prefix = "frontend",
+    goals = { "bower", "bun", "corepack", "grunt", "gulp", "help", "install-node-and-npm", "install-node-and-pnpm", "install-node-and-yarn", "jspm", "karma", "npm", "npx", "pnpm", "vite", "webpack", "yarn" },
+  },
+  ["git-commit-id-maven-plugin"] = { prefix = "git-commit-id", goals = { "help", "revision", "validateRevision" } },
+  ["jacoco-maven-plugin"] = { prefix = "jacoco", goals = { "check", "dump", "help", "instrument", "merge", "prepare-agent", "prepare-agent-integration", "report", "report-aggregate", "restore-instrumented-classes" } },
+  ["jib-maven-plugin"] = { prefix = "jib", goals = { "build", "buildTar", "dockerBuild", "exportDockerContext", "help", "skaffold-files-v2", "skaffold-init" } },
+  ["liquibase-maven-plugin"] = {
+    prefix = "liquibase",
+    goals = { "changelogSync", "changelogSyncSQL", "clearCheckSums", "dbDoc", "diff", "dropAll", "futureRollbackSQL", "help", "migrate", "releaseLocks", "rollback", "rollbackSQL", "status", "tag", "update", "updateSQL", "validate" },
+  },
+  ["maven-antrun-plugin"] = { prefix = "antrun", goals = { "help", "run" } },
+  ["maven-assembly-plugin"] = { prefix = "assembly", goals = { "help", "single" } },
+  ["maven-checkstyle-plugin"] = { prefix = "checkstyle", goals = { "check", "checkstyle", "help" } },
+  ["maven-clean-plugin"] = { prefix = "clean", goals = { "clean", "help" } },
+  ["maven-compiler-plugin"] = { prefix = "compiler", goals = { "compile", "help", "testCompile" } },
+  ["maven-dependency-plugin"] = {
+    prefix = "dependency",
+    goals = { "analyze", "analyze-dep-mgt", "analyze-duplicate", "build-classpath", "copy", "copy-dependencies", "get", "go-offline", "help", "list", "list-classes", "purge-local-repository", "resolve", "resolve-plugins", "sources", "tree", "unpack", "unpack-dependencies" },
+  },
+  ["maven-deploy-plugin"] = { prefix = "deploy", goals = { "deploy", "deploy-file", "help" } },
+  ["maven-enforcer-plugin"] = { prefix = "enforcer", goals = { "display-info", "enforce", "help" } },
+  ["maven-failsafe-plugin"] = { prefix = "failsafe", goals = { "help", "integration-test", "verify" } },
+  ["maven-gpg-plugin"] = { prefix = "gpg", goals = { "help", "sign", "sign-and-deploy-file", "sign-deployed", "sign-file" } },
+  ["maven-help-plugin"] = { prefix = "help", goals = { "active-profiles", "all-profiles", "describe", "effective-pom", "effective-settings", "evaluate", "help", "system" } },
+  ["maven-install-plugin"] = { prefix = "install", goals = { "help", "install", "install-file" } },
+  ["maven-invoker-plugin"] = { prefix = "invoker", goals = { "help", "install", "integration-test", "report", "run", "verify" } },
+  ["maven-jar-plugin"] = { prefix = "jar", goals = { "help", "jar", "test-jar" } },
+  ["maven-javadoc-plugin"] = { prefix = "javadoc", goals = { "aggregate", "help", "jar", "javadoc", "test-jar" } },
+  ["maven-pmd-plugin"] = { prefix = "pmd", goals = { "check", "cpd", "cpd-check", "help", "pmd" } },
+  ["maven-release-plugin"] = { prefix = "release", goals = { "branch", "clean", "help", "perform", "prepare", "rollback", "stage", "update-versions" } },
+  ["maven-resources-plugin"] = { prefix = "resources", goals = { "copy-resources", "help", "resources", "testResources" } },
+  ["maven-shade-plugin"] = { prefix = "shade", goals = { "help", "shade" } },
+  ["maven-site-plugin"] = { prefix = "site", goals = { "deploy", "help", "run", "site", "stage", "stage-deploy" } },
+  ["maven-source-plugin"] = { prefix = "source", goals = { "aggregate", "help", "jar", "jar-no-fork", "test-jar" } },
+  ["maven-surefire-plugin"] = { prefix = "surefire", goals = { "help", "test" } },
+  ["maven-thrift-plugin"] = { prefix = "thrift", goals = { "compile", "help", "testCompile" } },
+  ["maven-war-plugin"] = { prefix = "war", goals = { "exploded", "help", "inplace", "war" } },
+  ["mybatis-generator-maven-plugin"] = { prefix = "mybatis-generator", goals = { "generate", "help" } },
+  ["protobuf-maven-plugin"] = { prefix = "protobuf", goals = { "compile", "compile-custom", "help", "test-compile", "test-compile-custom" } },
+  ["replacer"] = { prefix = "replacer", goals = { "help", "replace" } },
+  ["scala-maven-plugin"] = { prefix = "scala", goals = { "add-source", "cc", "cctest", "compile", "console", "doc", "help", "run", "script", "testCompile" } },
+  ["sonar-maven-plugin"] = { prefix = "sonar", goals = { "help", "sonar" } },
+  ["sortpom-maven-plugin"] = { prefix = "sortpom", goals = { "help", "sort", "verify" } },
+  ["spotbugs-maven-plugin"] = { prefix = "spotbugs", goals = { "check", "gui", "help", "spotbugs" } },
+  ["spring-boot-maven-plugin"] = { prefix = "spring-boot", goals = { "build-image", "build-info", "help", "process-aot", "process-test-aot", "repackage", "run", "start", "stop", "test-run" } },
+  ["versions-maven-plugin"] = {
+    prefix = "versions",
+    goals = { "commit", "display-dependency-updates", "display-plugin-updates", "display-property-updates", "help", "lock-snapshots", "resolve-ranges", "revert", "set", "set-property", "update-child-modules", "update-parent", "use-latest-releases", "use-latest-snapshots", "use-latest-versions", "use-next-releases", "use-next-snapshots", "use-releases" },
+  },
+}
+
+M.lifecycle_goals = {
+  "clean",
+  "validate",
+  "compile",
+  "test",
+  "package",
+  "verify",
+  "install",
+  "deploy",
+  "site",
+}
+
+return M

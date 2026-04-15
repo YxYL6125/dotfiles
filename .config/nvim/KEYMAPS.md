@@ -113,7 +113,41 @@
 | `:CloudDevBind` | 手动为当前 git 项目绑定 CloudIDE workspace | Global | `lua/plugins/clouddev.lua:533` |
 | `:CloudDevUnbind` | 清除当前 git 项目的 CloudIDE workspace 绑定 | Global | `lua/plugins/clouddev.lua:550` |
 
-### 1.8 文件类型专属
+### 1.8 Maven / Java 项目
+
+> 说明：这是补的 IDEA 风格 Maven 入口升级版。主入口 `MavenMenu` 现在优先走 `Snacks.picker` 大面板：先选“当前模块 / 选择模块”，然后进入一个可搜索、可预览、按分组展示的 Maven 面板，里面直接混合展示 `Action / Favorite / Recent / Lifecycle / Plugin / Thrift` 项。回车直接执行；在面板里可用 `<C-a>` 把当前命令加入收藏，`<C-d>` 取消当前命令收藏，`<C-y>` 复制完整 mvn 命令。没有 `Snacks` 时会自动退回 `vim.ui.select`。执行结果仍走 `ToggleTerm` 浮动终端。模块命令默认带 `-pl <module> -am`，多模块仓库更稳。若仓库有 `mvnw`，优先走 `./mvnw`。收藏和最近历史会持久化到 `stdpath("state")/maven-tools.json`。
+
+| Key | Action | Scope | Source |
+|---|---|---|---|
+| `<leader>mm` | Maven 二级动作菜单 | Global | `lua/plugins/maven.lua:10` |
+| `<leader>ml` | 对当前模块执行 lifecycle goal | Global | `lua/plugins/maven.lua:14` |
+| `<leader>mL` | 先选模块，再执行 lifecycle goal | Global | `lua/plugins/maven.lua:18` |
+| `<leader>mp` | 对当前模块执行 plugin goal（二级：先插件，再 goal） | Global | `lua/plugins/maven.lua:22` |
+| `<leader>mP` | 先选模块，再执行 plugin goal | Global | `lua/plugins/maven.lua:26` |
+| `<leader>mt` | 对当前模块执行 thrift plugin goal | Global | `lua/plugins/maven.lua:30` |
+| `<leader>mr` | 对当前模块输入任意 mvn 参数/goal 执行 | Global | `lua/plugins/maven.lua:34` |
+| `<leader>mR` | 先选模块，再输入任意 mvn 参数/goal 执行 | Global | `lua/plugins/maven.lua:38` |
+| `<leader>mf` | 对当前模块执行收藏的 Maven goal | Global | `lua/plugins/maven.lua:42` |
+| `<leader>mF` | 先选模块，再执行收藏的 Maven goal | Global | `lua/plugins/maven.lua:46` |
+| `<leader>mh` | 查看当前项目最近 Maven 历史并可重跑 | Global | `lua/plugins/maven.lua:50` |
+| `<leader>mA` | 添加收藏的 Maven goal | Global | `lua/plugins/maven.lua:54` |
+| `<leader>md` | 删除收藏的 Maven goal | Global | `lua/plugins/maven.lua:58` |
+| `:MavenMenu` | Maven 二级动作菜单 | Global | `lua/config/maven.lua` |
+| `:MavenLifecycle` | 当前模块 lifecycle goal | Global | `lua/config/maven.lua` |
+| `:MavenLifecycleSelectModule` | 选择模块后执行 lifecycle goal | Global | `lua/config/maven.lua` |
+| `:MavenPluginGoal` | 当前模块 plugin goal | Global | `lua/config/maven.lua` |
+| `:MavenPluginGoalSelectModule` | 选择模块后执行 plugin goal | Global | `lua/config/maven.lua` |
+| `:MavenThrift` | 当前模块 thrift goal | Global | `lua/config/maven.lua` |
+| `:MavenFavorites` | 当前模块执行收藏 goal | Global | `lua/config/maven.lua` |
+| `:MavenFavoritesSelectModule` | 选择模块后执行收藏 goal | Global | `lua/config/maven.lua` |
+| `:MavenHistory` | 查看当前项目最近执行历史 | Global | `lua/config/maven.lua` |
+| `:MavenFavoriteAdd [goal]` | 添加收藏；无参数时弹输入框 | Global | `lua/config/maven.lua` |
+| `:MavenFavoriteAddFromHistory` | 从当前项目最近历史加入收藏 | Global | `lua/config/maven.lua` |
+| `:MavenFavoriteRemove [goal]` | 删除收藏；无参数时弹选择框 | Global | `lua/config/maven.lua` |
+| `:MavenRun [args]` | 当前模块执行自定义 mvn 命令；无参数时弹输入框 | Global | `lua/config/maven.lua` |
+| `:MavenRunSelectModule [args]` | 选择模块后执行自定义 mvn 命令；无参数时弹输入框 | Global | `lua/config/maven.lua` |
+
+### 1.9 文件类型专属
 
 #### Python
 
