@@ -34,6 +34,32 @@ end
 
 function M.resolve_lombok_jar() return first_existing(vim.fn.stdpath "data" .. "/mason/packages/jdtls/lombok.jar") end
 
+function M.java_root_dir(startpath)
+  local path = startpath or vim.api.nvim_buf_get_name(0)
+  if not path or path == "" then return end
+
+  local source = vim.fs.dirname(vim.fs.normalize(path))
+  local root_markers = { ".git", "mvnw", "gradlew", "build.gradle", "build.gradle.kts" }
+  local root_hits = vim.fs.find(root_markers, { path = source, upward = true })
+  local root_dir = root_hits[1] and vim.fs.dirname(root_hits[1]) or nil
+
+  local pom_path = vim.fs.find("pom.xml", { path = source, upward = true })[1]
+  local pom_dir = pom_path and vim.fs.dirname(pom_path) or nil
+  if not pom_dir then return root_dir end
+
+  local highest_pom_dir = pom_dir
+  while true do
+    local parent_dir = vim.fs.dirname(highest_pom_dir)
+    if not parent_dir or parent_dir == highest_pom_dir then break end
+    if root_dir and not vim.startswith(parent_dir, root_dir) then break end
+    if not vim.uv.fs_stat(parent_dir .. "/pom.xml") then break end
+    highest_pom_dir = parent_dir
+  end
+
+  if root_dir and vim.startswith(highest_pom_dir, root_dir) then return highest_pom_dir end
+  return pom_dir
+end
+
 function M.resolve_debugpy_python()
   return first_existing(
     vim.fn.stdpath "data" .. "/mason/packages/debugpy/venv/bin/python",
@@ -113,11 +139,19 @@ function M.smart_code_action(bufnr, opts)
     end
   end
 
+  local function lsp_diagnostics(items)
+    local converted = {}
+    for _, diagnostic in ipairs(items or {}) do
+      table.insert(converted, diagnostic.user_data and diagnostic.user_data.lsp or diagnostic)
+    end
+    return converted
+  end
+
   local function request_for_range(range, on_done)
     local params = vim.lsp.util.make_range_params(0, position_encoding)
     params.range = range
     params.context = {
-      diagnostics = diagnostics,
+      diagnostics = lsp_diagnostics(diagnostics),
       only = opts.only,
       triggerKind = 1,
     }

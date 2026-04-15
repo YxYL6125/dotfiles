@@ -2,17 +2,13 @@ local ok, jdtls = pcall(require, "jdtls")
 if not ok then return end
 
 local lang = require "config.lang"
-local root_dir =
-  require("jdtls.setup").find_root { ".git", "pom.xml", "mvnw", "gradlew", "build.gradle", "build.gradle.kts" }
+local root_dir = lang.java_root_dir()
 if not root_dir then return end
 
 local lombok_jar = lang.resolve_lombok_jar()
 local java_exe = lang.resolve_java_executable()
 local cmd = { "jdtls", "--java-executable=" .. java_exe, "--jvm-arg=--add-modules=java.compiler,jdk.compiler" }
-if lombok_jar then
-  table.insert(cmd, "--jvm-arg=-javaagent:" .. lombok_jar)
-  table.insert(cmd, "--jvm-arg=-Xbootclasspath/a:" .. lombok_jar)
-end
+if lombok_jar then table.insert(cmd, "--jvm-arg=-javaagent:" .. lombok_jar) end
 
 local config = {
   cmd = cmd,
@@ -56,6 +52,15 @@ local config = {
     local jdtls_dap = require "jdtls.dap"
     jdtls.setup_dap { hotcodereplace = "auto" }
     jdtls_dap.setup_dap_main_class_configs()
+
+    local refresh_state = vim.g._java_project_refresh_state or {}
+    vim.g._java_project_refresh_state = refresh_state
+    if root_dir and not refresh_state[root_dir] then
+      refresh_state[root_dir] = true
+      vim.defer_fn(function()
+        pcall(jdtls.update_project_config)
+      end, 3000)
+    end
 
     local map = function(lhs, rhs, desc) vim.keymap.set("n", lhs, rhs, { buffer = bufnr, desc = desc }) end
     map("<leader>jo", jdtls.organize_imports, "Java organize imports")
