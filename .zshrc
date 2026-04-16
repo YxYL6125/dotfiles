@@ -64,6 +64,10 @@ export JAVA_HOME=/Users/bytedance/workspace/env/jdk/jdk-21
 export PATH=$JAVA_HOME/bin:$PATH
 export CLASSPATH=.:$JAVA_HOME/lib
 
+# maven
+export MAVEN_HOME=/Users/bytedance/workspace/env/mvn/maven-3.9.14
+export PATH=$MAVEN_HOME/bin:$PATH
+
 # nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -208,3 +212,4 @@ pullreq() {
   adb pull "/sdcard/Download/Reqable/$name" "$dest/" || return 1
 }
 
+export PATH=/Users/bytedance/.local/bin:$PATH
