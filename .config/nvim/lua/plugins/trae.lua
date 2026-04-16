@@ -1,7 +1,12 @@
 ---@type LazySpec
+local real_home = "/Users/bytedance"
+local hermes_home = "/Users/bytedance/.hermes/profiles/company/home"
+local enable_trae = vim.env.HOME == real_home and vim.env.HOME ~= hermes_home
+
 return {
   {
     "https://code.byted.org/chenjiaqi.cposture/codeverse.vim.git",
+    enabled = enable_trae,
     event = "InsertEnter",
     cmd = { "Trae", "Marscode", "Codeverse" },
     init = function()

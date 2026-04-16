@@ -308,7 +308,10 @@
 | `<leader>gg` | Git 主面板（LazyGit，走 AstroNvim ToggleTerm 浮窗路径） | Global | `lua/plugins/git.lua` |
 | `<leader>gn` | Git 状态面板（Neogit） | Global | `lua/plugins/git.lua` |
 | `<leader>gc` | Git commit 面板（Neogit） | Global | `lua/plugins/git.lua` |
-| `<leader>gb` | Git branches | Global | `lua/plugins/git.lua` |
+| `<leader>gb` | 当前仓库 Git branches | Global | `lua/plugins/git.lua` |
+| `<leader>gO` | Git workspace 固定双窗格总览面板：左侧 branch 分组，右侧该 branch 下 repos；`<Tab>` 切换焦点，`/` 切排序，`d` 只看 dirty，`t` 只看 ahead/behind，右侧回车进 repo branches，`<C-p>` 批量 pull，`<C-u>` 批量 fetch | Global | `lua/plugins/git.lua` |
+| `<leader>gw` | Git workspace repos：按当前工作区/父目录扫描多个 sibling repo，展示 branch + dirty 状态，并可继续进入该 repo 的 branches 面板 | Global | `lua/plugins/git.lua` |
+| `<leader>gW` | Git workspace branches：跨多个 sibling repo 汇总本地 branches，支持直接切换 branch | Global | `lua/plugins/git.lua` |
 | `<leader>ge` | Git changed files（status picker） | Global | `lua/plugins/git.lua` |
 | `<leader>gh` | Git 仓库提交历史（picker） | Global | `lua/plugins/git.lua` |
 | `<leader>gf` | 当前文件 Git history（picker） | Global | `lua/plugins/git.lua` |
