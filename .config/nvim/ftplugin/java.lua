@@ -2,6 +2,11 @@ local ok, jdtls = pcall(require, "jdtls")
 if not ok then return end
 
 local lang = require "config.lang"
+
+vim.lsp.commands["java.show.references"] = function(command, ctx)
+  lang.java_show_references(command, ctx)
+end
+
 local root_dir = lang.java_root_dir()
 if not root_dir then return end
 

@@ -1,44 +1,3 @@
-local function thrift_workspace_root(bufnr)
-  for _, client in ipairs(vim.lsp.get_clients { bufnr = bufnr }) do
-    if client.name == "thriftls" then return client.config.root_dir end
-  end
-  return vim.fs.dirname(vim.api.nvim_buf_get_name(bufnr)) or vim.fn.getcwd()
-end
-
-local function thrift_search_references(bufnr)
-  local word = vim.fn.expand "<cword>"
-  if word == "" then return end
-  require("snacks").picker.grep {
-    cwd = thrift_workspace_root(bufnr),
-    search = word,
-    regex = false,
-    glob = "*.thrift",
-    args = { "--word-regexp" },
-  }
-end
-
-local function thrift_references_or_search(bufnr)
-  local params = vim.lsp.util.make_position_params(0, "utf-8")
-  local result = vim.lsp.buf_request_sync(bufnr, "textDocument/references", {
-    textDocument = params.textDocument,
-    position = params.position,
-    context = { includeDeclaration = true },
-  }, 1000)
-
-  for client_id, response in pairs(result or {}) do
-    local client = vim.lsp.get_client_by_id(client_id)
-    if client and client.name == "thriftls" then
-      if response and not response.err and response.result and not vim.tbl_isempty(response.result) then
-        vim.lsp.buf.references()
-        return
-      end
-      break
-    end
-  end
-
-  thrift_search_references(bufnr)
-end
-
 local lang = require "config.lang"
 
 local function go_organize_imports_and_format(bufnr)
@@ -78,6 +37,11 @@ return {
       "pyright",
       "rust_analyzer",
       "thriftls",
+    },
+    handlers = {
+      -- Java is started from ftplugin/java.lua through nvim-jdtls.
+      -- Do not let Mason/AstroLSP also start the generic jdtls config.
+      jdtls = false,
     },
     ---@diagnostic disable: missing-fields
     config = {
@@ -168,30 +132,35 @@ return {
     },
     mappings = {
       n = {
+        ["<C-]>"] = {
+          function() lang.smart_lsp_jump(0) end,
+          desc = "Smart go to implementation/definition",
+        },
         gD = {
-          function() vim.lsp.buf.declaration() end,
+          function() lang.lsp_location("declaration", 0) end,
           desc = "Declaration of current symbol",
           cond = "textDocument/declaration",
         },
         gd = {
-          function() vim.lsp.buf.definition() end,
+          function() lang.lsp_location("definition", 0) end,
           desc = "Show definition",
           cond = "textDocument/definition",
         },
         gi = {
-          function() vim.lsp.buf.implementation() end,
+          function() lang.lsp_location("implementation", 0) end,
           desc = "Show implementations",
           cond = "textDocument/implementation",
         },
         gr = {
-          function() thrift_references_or_search(0) end,
-          desc = "Show references",
-          cond = function(client, bufnr)
-            return vim.bo[bufnr].filetype == "thrift" or client:supports_method "textDocument/references"
-          end,
+          function() lang.lsp_location("references", 0, { include_declaration = false }) end,
+          desc = "Find usages",
+        },
+        gR = {
+          function() lang.lsp_location("references", 0, { include_declaration = true }) end,
+          desc = "Show references including declaration",
         },
         gy = {
-          function() vim.lsp.buf.type_definition() end,
+          function() lang.lsp_location("type_definition", 0) end,
           desc = "Show type definition",
           cond = "textDocument/typeDefinition",
         },
@@ -204,6 +173,20 @@ return {
           function() lang.smart_code_action(0) end,
           desc = "Code actions",
           cond = "textDocument/codeAction",
+        },
+        ["<leader>cu"] = {
+          function() lang.lsp_location("references", 0, { include_declaration = false }) end,
+          desc = "Find usages",
+        },
+        ["<leader>cI"] = {
+          function() lang.lsp_call_hierarchy("incoming_calls", 0) end,
+          desc = "Incoming calls",
+          cond = "textDocument/prepareCallHierarchy",
+        },
+        ["<leader>cO"] = {
+          function() lang.lsp_call_hierarchy("outgoing_calls", 0) end,
+          desc = "Outgoing calls",
+          cond = "textDocument/prepareCallHierarchy",
         },
         K = {
           function() vim.lsp.buf.hover() end,
